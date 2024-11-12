@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -16,7 +16,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
 
 import {
   Colors,
@@ -62,10 +61,6 @@ function App(): React.JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
-  useState(() => {
-    SplashScreen.hide();
-  },);
 
   return (
     <SafeAreaView style={backgroundStyle}>
