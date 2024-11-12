@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
   POLYGON_BASE_URL,
   POLYGON_API_URL,
@@ -64,19 +64,21 @@ class ApiRequest {
     return response.data;
   }
 
-  private handleError(error: any) {
+  private handleError(error: AxiosError<{error: string}>) {
     // Customize error handling here
     if (error.response) {
       // Server responded with a status other than 200 range
-      console.error('Server Error:', error.response.data);
+      console.log('Server Error:', error.response?.data.error);
+      return Promise.reject(error.response.data.error);
     } else if (error.request) {
       // Request was made but no response received
-      console.error('Network Error:', error.request);
+      console.log('Network Error:', error.request);
+      return Promise.reject(error.request._response);
     } else {
       // Something else happened while setting up the request
-      console.error('Error:', error.message);
+      console.log('Error:', error.message);
+      return Promise.reject(error.message);
     }
-    return Promise.reject(error);
   }
 
   public async GET<T>(config?: AxiosRequestConfig): Promise<T> {
