@@ -27,7 +27,7 @@ const isCloseToBottom = ({
   );
 };
 
-export default function StocksScreen() {
+export default function TickersScreen() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const {
@@ -37,7 +37,7 @@ export default function StocksScreen() {
     fetchNextPage,
   } = useTickers(searchTerm);
 
-  const searchStocks = debounce((_searchTerm: string) => {
+  const searchTickers = debounce((_searchTerm: string) => {
     setSearchTerm(_searchTerm);
   }, 100);
 
@@ -48,33 +48,35 @@ export default function StocksScreen() {
   return (
     <View style={styles.container}>
       <TextInput
+        accessibilityRole={'search'}
         style={styles.searchBar}
-        placeholder="Search for stocks"
+        placeholder="Search for tickers"
         placeholderTextColor={theme.colors.text.secondary}
-        onChangeText={text => searchStocks(text)}
+        onChangeText={text => searchTickers(text)}
       />
       {isLoading ?
         <ActivityIndicator size={'large'} />
-      : (
-        <FlatList
+        : (
+          <FlatList
+          testID="tickers-list"
           onScroll={({nativeEvent}) => {
-            if (isCloseToBottom(nativeEvent)) {
-              fetchNextPage();
+              if (isCloseToBottom(nativeEvent)) {
+                fetchNextPage();
+              }
+            }}
+            scrollEventThrottle={50}
+            data={tickersData}
+            renderItem={renderItem}
+            keyExtractor={item => item.ticker}
+            ItemSeparatorComponent={VerticalGap}
+            numColumns={2}
+            columnWrapperStyle={styles.column}
+            onEndReachedThreshold={0.95}
+            ListFooterComponent={
+              isFetchingNextPage ? <ActivityIndicator /> : null
             }
-          }}
-          scrollEventThrottle={50}
-          data={tickersData}
-          renderItem={renderItem}
-          keyExtractor={item => item.ticker}
-          ItemSeparatorComponent={VerticalGap}
-          numColumns={2}
-          columnWrapperStyle={styles.column}
-          onEndReachedThreshold={0.95}
-          ListFooterComponent={
-            isFetchingNextPage ? <ActivityIndicator /> : null
-          }
-        />
-      )}
+          />
+        )}
     </View>
   );
 }
